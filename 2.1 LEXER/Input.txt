@@ -1,0 +1,1 @@
+cond when (> x y) then (= x 0) else (= y 0) 12 13
