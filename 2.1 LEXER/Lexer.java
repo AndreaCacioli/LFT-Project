@@ -21,9 +21,8 @@ public class Lexer
 
     public Token lexical_scan(BufferedReader br)
     {
-      try {
-
-
+      try
+      {
         while (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r')
         {
             if (peek == '\n') line++;
@@ -57,8 +56,49 @@ public class Lexer
                 peek = ' ';
                 return Token.mult;
             case '/':
-                peek = ' ';
-                return Token.div;
+                br.mark(20);
+                readch(br);
+                if(peek == '/')
+                {
+                  while(peek != '\n' && peek != (char)-1)
+                  {
+                    readch(br);
+                  }
+                  return new NotAToken();
+                }
+                else if(peek == '*')
+                {
+
+                  while(peek != (char)-1)
+                  {
+                    do
+                    {
+                      readch(br);
+                    }while(peek != '*' && peek != (char)-1);
+
+                    br.mark(20);
+                    readch(br);
+                    if(peek == '/')
+                    {
+                      peek = ' ';
+                      return new NotAToken();
+                    }
+                    else
+                    {
+                      br.reset();
+                    }
+                  }
+                  throw new Exception("Comment not closed!");
+
+                }
+                else
+                {
+                  br.reset();
+                  peek = ' ';
+                  return Token.div;
+                }
+
+
             case ';':
                 peek = ' ';
                 return Token.semicolon;
@@ -215,10 +255,11 @@ public class Lexer
                         return null;
                 }
          }
-      } catch(Exception exception)
+      }
+      catch(Exception exception)
       {
         exception.printStackTrace();
-       }
+      }
          return null;
 
     }
@@ -233,8 +274,12 @@ public class Lexer
 
             do
             {
-                tok = lex.lexical_scan(br);
-                System.out.println("Scan: " + tok);
+               tok = lex.lexical_scan(br);
+               if(tok.toString() != "")
+               {
+                 System.out.println("Scan: " + tok);
+               }
+
 
             }while (tok.tag != Tag.EOF);
 
