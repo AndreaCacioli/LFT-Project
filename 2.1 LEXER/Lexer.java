@@ -145,22 +145,21 @@ public class Lexer
 
             default:
 
-
+                //Gestione Degli Identificatori
                 if (Character.isLetter(peek))
                 {
                   Word word = new Word(257, "");
 
-	                while(Character.isLetter(peek) || Character.isDigit(peek))
+	                while(Character.isLetter(peek) || Character.isDigit(peek) || peek == '_')
                   {
                     word.lexeme += peek;
-
                     readch(br);
 
 
-                    if((!Character.isLetter(peek) && !Character.isDigit(peek)) || (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r'))
+                    if((!Character.isLetter(peek) && !Character.isDigit(peek) && peek != '_') || (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r'))
                     {
 
-                      if(word.lexeme.equals("case")) return Word.casetok;
+                      if(word.lexeme.equals("cond")) return Word.cond;
                       if(word.lexeme.equals("when")) return Word.when;
                       if(word.lexeme.equals("then")) return Word.then;
                       if(word.lexeme.equals("else")) return Word.elsetok;
@@ -174,7 +173,7 @@ public class Lexer
                 }
 
 
-
+                //Gestione Dei Numeri
                 else if (Character.isDigit(peek))
                 {
                    if(peek == '0')
@@ -208,6 +207,8 @@ public class Lexer
                    }
 
                 }
+
+
                 else
                 {
                         System.err.println("Erroneous character: " + peek );
@@ -224,7 +225,7 @@ public class Lexer
 
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "/Users/andreacacioli/Desktop/Universitá/AA2Sems1/LFT_Lab/2.1 LEXER/Input.txt";
+        String path = "./Input.txt";
         try
         {
             BufferedReader br = new BufferedReader(new FileReader(path));
