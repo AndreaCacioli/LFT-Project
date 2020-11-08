@@ -4,7 +4,7 @@ import java.util.*;
 public class Lexer
 {
 
-    public static int line = 1;
+    public static int line = 1; //TODO: Make sure line is always the right number
     private char peek = ' ';
 
     private void readch(BufferedReader br)
@@ -56,17 +56,19 @@ public class Lexer
                 peek = ' ';
                 return Token.mult;
             case '/':
-                br.mark(20);
+
                 readch(br);
-                if(peek == '/')
+                if(peek == '/') // // scenario
                 {
                   while(peek != '\n' && peek != (char)-1)
                   {
                     readch(br);
                   }
+                  if (peek == '\n')line++;
+                  peek = ' ';
                   return new NotAToken();
                 }
-                else if(peek == '*')
+                else if(peek == '*') // /* scenario
                 {
 
                   while(peek != (char)-1)
@@ -75,17 +77,17 @@ public class Lexer
                     {
                       readch(br);
                     }while(peek != '*' && peek != (char)-1);
+                    // read: /* something *
 
-                    br.mark(20);
                     readch(br);
-                    if(peek == '/')
+                    if(peek == '/') //read: /* something */
                     {
                       peek = ' ';
                       return new NotAToken();
                     }
-                    else
+                    else //read : /* something *!
                     {
-                      br.reset();
+                      //Should not do anything just keep on reading
                     }
                   }
                   throw new Exception("Comment not closed!");
@@ -93,7 +95,7 @@ public class Lexer
                 }
                 else
                 {
-                  br.reset();
+
                   peek = ' ';
                   return Token.div;
                 }
@@ -130,7 +132,6 @@ public class Lexer
                 }
 
             case '<':
-                br.mark(20);
                 readch(br);
                 if(peek == '=')
                 {
@@ -144,13 +145,9 @@ public class Lexer
                 }
                 else
                 {
-                  br.reset();
-
-                  peek = ' ';
                   return Word.lt;
                 }
             case '>':
-                br.mark(20);
                 readch(br);
                 if(peek == '=')
                 {
@@ -159,13 +156,9 @@ public class Lexer
                 }
                 else
                 {
-                  br.reset();
-
-                  peek = ' ';
                   return Word.gt;
                 }
             case '=':
-                br.mark(20);
                 readch(br);
                 if(peek == '=')
                 {
@@ -174,9 +167,6 @@ public class Lexer
                 }
                 else
                 {
-                  br.reset();
-
-                  peek = ' ';
                   return Token.assign;
                 }
 
@@ -186,7 +176,7 @@ public class Lexer
             default:
 
                 //Gestione Degli Identificatori
-                if (Character.isLetter(peek))
+                if (Character.isLetter(peek) || peek == '_')
                 {
                   Word word = new Word(257, "");
 
@@ -198,7 +188,9 @@ public class Lexer
 
                     if((!Character.isLetter(peek) && !Character.isDigit(peek) && peek != '_') || (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r'))
                     {
+                      if(peek == '\n') line++;
 
+                      if(word.lexeme.equals("_")) throw new Exception("\'_\' at line " + line + " is not a valid identifier");
                       if(word.lexeme.equals("cond")) return Word.cond;
                       if(word.lexeme.equals("when")) return Word.when;
                       if(word.lexeme.equals("then")) return Word.then;
@@ -237,6 +229,7 @@ public class Lexer
 
                      if(!Character.isDigit(peek) || (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r'))
                      {
+                       if(peek == '\n') line++;
                        return n;
                      }
                      else
