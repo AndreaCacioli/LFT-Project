@@ -1,13 +1,2 @@
-cond C______ mi chiamo
-____prova
-__provaidentifier
-/* none of this should appear*/
-
-CiaoIoInveceAppaio
-
-a*/
-/* mi chiamo antonio*/ /* ciao * ciao*/
-
-//Corpezzoli
-
-_
+cond prova casa
+/*pop*/ patata _cusa

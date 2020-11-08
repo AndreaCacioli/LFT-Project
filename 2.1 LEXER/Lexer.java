@@ -85,10 +85,7 @@ public class Lexer
                       peek = ' ';
                       return new NotAToken();
                     }
-                    else //read : /* something *!
-                    {
-                      //Should not do anything just keep on reading
-                    }
+                    // else do nothing and while restart
                   }
                   throw new Exception("Comment not closed!");
 
@@ -184,11 +181,10 @@ public class Lexer
                   {
                     word.lexeme += peek;
                     readch(br);
-
-
+					if(peek == '\n') line++;
                     if((!Character.isLetter(peek) && !Character.isDigit(peek) && peek != '_') || (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r'))
                     {
-                      if(peek == '\n') line++;
+                      
 
                       if(word.lexeme.equals("_")) throw new Exception("\'_\' at line " + line + " is not a valid identifier");
                       if(word.lexeme.equals("cond")) return Word.cond;
@@ -275,6 +271,7 @@ public class Lexer
 
 
             }while (tok.tag != Tag.EOF);
+			System.out.println("Line: " + line);
 
             br.close();
         }
