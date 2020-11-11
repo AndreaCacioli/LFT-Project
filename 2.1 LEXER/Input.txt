@@ -1,2 +1,0 @@
-cond prova casa
-/*pop*/ patata _cusa
