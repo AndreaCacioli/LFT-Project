@@ -252,7 +252,7 @@ public class Lexer
 
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "./Input.txt";
+        String path = "../Input.txt";
         try
         {
             BufferedReader br = new BufferedReader(new FileReader(path));

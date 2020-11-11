@@ -1,13 +1,14 @@
 public class NumberTok extends Token
 {
+    public static final int tag = 256;
     public long lexeme;
     NumberTok(long n)
     {
-      super(256);
+      super(tag);
       lexeme = n;
     }
     public String toString()
     {
-      return "<256," + String.valueOf(lexeme) + ">";
+      return "<" + tag + "," + String.valueOf(lexeme) + ">";
     }
 }
