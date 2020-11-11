@@ -21,8 +21,7 @@ public class Lexer
 
     public Token lexical_scan(BufferedReader br)
     {
-      try
-      {
+
         while (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r')
         {
             if (peek == '\n') line++;
@@ -66,7 +65,7 @@ public class Lexer
                   }
                   if (peek == '\n')line++;
                   peek = ' ';
-                  return new NotAToken();
+                  return lexical_scan(br);
                 }
                 else if(peek == '*') // /* scenario
                 {
@@ -83,12 +82,12 @@ public class Lexer
                     if(peek == '/') //read: /* something */
                     {
                       peek = ' ';
-                      return new NotAToken();
+                      return lexical_scan(br);
                     }
                     // else do nothing and while restart
                   }
-                  throw new Exception("Comment not closed!");
-
+                  System.err.println("Comment not closed at line " + line);
+                  return null;
                 }
                 else
                 {
@@ -181,12 +180,16 @@ public class Lexer
                   {
                     word.lexeme += peek;
                     readch(br);
-					if(peek == '\n') line++;
+					          if(peek == '\n') line++;
                     if((!Character.isLetter(peek) && !Character.isDigit(peek) && peek != '_') || (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r'))
                     {
-                      
 
-                      if(word.lexeme.equals("_")) throw new Exception("\'_\' at line " + line + " is not a valid identifier");
+
+                      if(word.lexeme.equals("_"))
+                      {
+                        System.err.println("\'_\' at line " + line + " is not a valid identifier");
+                        return null;
+                      }
                       if(word.lexeme.equals("cond")) return Word.cond;
                       if(word.lexeme.equals("when")) return Word.when;
                       if(word.lexeme.equals("then")) return Word.then;
@@ -244,13 +247,7 @@ public class Lexer
                         return null;
                 }
          }
-      }
-      catch(Exception exception)
-      {
-        exception.printStackTrace();
-      }
          return null;
-
     }
 
     public static void main(String[] args) {
@@ -264,14 +261,10 @@ public class Lexer
             do
             {
                tok = lex.lexical_scan(br);
-               if(tok.toString() != "")
-               {
-                 System.out.println("Scan: " + tok);
-               }
-
-
+               System.out.println("Scan: " + tok);
             }while (tok.tag != Tag.EOF);
-			System.out.println("Line: " + line);
+
+			         System.out.println("Line: " + line);
 
             br.close();
         }
