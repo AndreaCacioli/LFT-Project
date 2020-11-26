@@ -5,4 +5,7 @@ This project is the collection of all the smaller programs which will be made th
 ## Section 2:
     * Lexer for a java-like language
 ## Section 3:
-    * Parser for simple mathematical expressions
+    *1 Parser for simple mathematical expressions
+    *2 Parser for a java-like programming language
+## Section 4:
+    *1 Translator fo simple mathematical expressions
