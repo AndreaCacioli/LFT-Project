@@ -140,7 +140,6 @@ public class Parser {
           break;
         case NumberTok.tag:
           match(NumberTok.tag);
-          System.out.println("FOUND A NUMBER");
           break;
         default:
           error("syntax error in fact");

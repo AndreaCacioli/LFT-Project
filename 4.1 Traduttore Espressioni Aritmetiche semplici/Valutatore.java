@@ -35,7 +35,7 @@ public class Valutatore {
 
     public void start()
     {
-	    int expr_val;
+	    int expr_val = 0;
 
     	switch(look.tag)
       {
@@ -53,7 +53,7 @@ public class Valutatore {
 
     private int expr()
     {
-	    int term_val, exprp_val;
+	    int term_val = 0, exprp_val = 0;
 
       switch(look.tag)
       {
@@ -71,49 +71,102 @@ public class Valutatore {
 
     private int exprp(int exprp_i)
     {
-	    int term_val, exprp_val;
+	    int term_val = 0, exprp_val = 0;
 	    switch (look.tag)
       {
   	    case '+':
               match('+');
               term_val = term();
               exprp_val = exprp(exprp_i + term_val); //{exprp1.i=exprp.i+term.val}
-              return exprp_val;
+              break;
         case '-':
               match(Token.minus.tag);
               term_val = term();
               exprp_val = exprp(exprp_i - term_val); //{exprp1.i=exprp.i−term.val}
-              return exprp_val; //{exprp.val=exprp1.val}
+              break; //{exprp.val=exprp1.val}
         case ')':
         case Tag.EOF:
               exprp_val = exprp_i;
-              return exprp_val; //{exprp.val=exprp.i}
-              break;
+              break; //{exprp.val=exprp.i}
         default:
               error("syntax error in exprp");
               break;
 	    }
+      return exprp_val;
     }
 
     private int term()
     {
-	     // ... completare ...
+      int fact_val = 0, termp_val = 0;
+      switch (look.tag)
+      {
+        case NumberTok.tag:
+        case '(':
+          fact_val = fact();
+          termp_val = termp(fact_val);
+          break;
+        default:
+          error("syntax error in term");
+          break;
+      }
+      return termp_val;
     }
 
     private int termp(int termp_i)
     {
-	     // ... completare ...
+      int fact_val = 0, termp_val = 0;
+      switch (look.tag)
+      {
+        case ')':
+        case Tag.EOF:
+        case '+':
+        case '-':
+          termp_val = termp_i;
+          break;
+        case '*':
+          match(Token.mult.tag);
+          fact_val = fact();
+          termp_val = termp(fact_val * termp_i);
+          break;
+        case '/':
+          match(Token.div.tag);
+          fact_val = fact();
+          termp_val = termp(fact_val / termp_i);
+          break;
+        default:
+          error("syntax error in termp");
+          break;
+      }
+      return termp_val;
     }
 
     private int fact()
     {
-	     // ... completare ...
+      int fact_val = 0;
+      switch (look.tag)
+      {
+        case '(':
+          match(Token.lpt.tag);
+          fact_val = expr();
+          match(Token.rpt.tag);
+          break;
+        case NumberTok.tag:
+          fact_val = (int)((NumberTok)look).lexeme; //We need to get the value of the token before we check, otherwise we try to cast a token into a NumberTok
+          match(NumberTok.tag);
+          break;
+        default:
+          error("syntax error in fact");
+          break;
+      }
+      return fact_val;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         Lexer lex = new Lexer();
-        String path = "../Input.txt"; // il percorso del file da leggere
-        try {
+        String path = "../Input.txt";
+        try
+        {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Valutatore valutatore = new Valutatore(lex, br);
             valutatore.start();
