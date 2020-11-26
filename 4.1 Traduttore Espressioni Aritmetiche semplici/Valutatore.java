@@ -37,40 +37,61 @@ public class Valutatore {
     {
 	    int expr_val;
 
-    	// ... completare ...
-
-    	expr_val = expr();
-	    match(Tag.EOF);
-
-        System.out.println(expr_val);
-
-	    // ... completare ...
+    	switch(look.tag)
+      {
+        case '(':
+        case NumberTok.tag:
+          expr_val = expr();
+          match(Tag.EOF);
+          System.out.println(expr_val);
+          break;
+        default:
+          error("your expression should either start with a number or a parenthesis");
+          break;
+      }
     }
 
     private int expr()
     {
 	    int term_val, exprp_val;
 
-	    // ... completare ...
-
-    	term_val = term();
-	    exprp_val = exprp(term_val);
-
-	    // ... completare ...
-	    return exprp_val;
+      switch(look.tag)
+      {
+        case NumberTok.tag:
+        case '(':
+          term_val = term();
+          exprp_val = exprp(term_val); //{exprp.i=term.val}
+          break;
+        default:
+          error("syntax error in expr");
+          break;
+      }
+	    return exprp_val; //{expr.val=exprp.val}
     }
 
     private int exprp(int exprp_i)
     {
 	    int term_val, exprp_val;
-	    switch (look.tag) {
-	    case '+':
-            match('+');
-            term_val = term();
-            exprp_val = exprp(exprp_i + term_val);
-            break;
-
-    	// ... completare ...
+	    switch (look.tag)
+      {
+  	    case '+':
+              match('+');
+              term_val = term();
+              exprp_val = exprp(exprp_i + term_val); //{exprp1.i=exprp.i+term.val}
+              return exprp_val;
+        case '-':
+              match(Token.minus.tag);
+              term_val = term();
+              exprp_val = exprp(exprp_i - term_val); //{exprp1.i=exprp.i−term.val}
+              return exprp_val; //{exprp.val=exprp1.val}
+        case ')':
+        case Tag.EOF:
+              exprp_val = exprp_i;
+              return exprp_val; //{exprp.val=exprp.i}
+              break;
+        default:
+              error("syntax error in exprp");
+              break;
 	    }
     }
 
