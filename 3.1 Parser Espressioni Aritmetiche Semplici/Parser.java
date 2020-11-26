@@ -25,6 +25,7 @@ public class Parser {
 
     void match(int t)
     {
+
 	     if (look.tag == t)
        {
 	        if (look.tag != Tag.EOF) move();
@@ -34,16 +35,16 @@ public class Parser {
 
     public void start() //S
     {
+
     	switch(look.tag)
       {
         case '(':
         case NumberTok.tag:
-        case Tag.EOF:
           expr();
           match(Tag.EOF);
           break;
         default:
-          error("your expression should start with either a number or a parenthesis");
+          error("your expression should either start with a number or a parenthesis");
           break;
       }
     }
@@ -78,6 +79,10 @@ public class Parser {
           exprp();
           break;
         case ')':
+        case Tag.EOF:
+          break;
+        default:
+          error("syntax error in exprp");
           break;
 
       }
@@ -102,21 +107,25 @@ public class Parser {
     {
       switch (look.tag)
       {
-        case '(':
         case ')':
-        case NumberTok.tag:
+        case Tag.EOF:
+        case '+':
+        case '-':
           break;
         case '*':
           match(Token.mult.tag);
-          termp();
           fact();
+          termp();
           break;
         case '/':
           match(Token.div.tag);
-          termp();
           fact();
+          termp();
           break;
-      
+        default:
+          error("syntax error in termp");
+          break;
+
       }
     }
 
@@ -131,6 +140,7 @@ public class Parser {
           break;
         case NumberTok.tag:
           match(NumberTok.tag);
+          System.out.println("FOUND A NUMBER");
           break;
         default:
           error("syntax error in fact");
