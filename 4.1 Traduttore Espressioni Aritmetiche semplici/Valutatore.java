@@ -131,12 +131,14 @@ public class Valutatore {
         case '/':
           match(Token.div.tag);
           fact_val = fact();
-          termp_val = termp(fact_val / termp_i);
+          termp_val = termp(termp_i / fact_val);
+          //System.out.println("termp: Returning " + termp_val + " to the calling method as fact_val=" + fact_val + " and termp_i=" + termp_i + " and I have to divide them!");
           break;
         default:
           error("syntax error in termp");
           break;
       }
+
       return termp_val;
     }
 
@@ -158,6 +160,7 @@ public class Valutatore {
           error("syntax error in fact");
           break;
       }
+      //System.out.println("fact: Returning " + fact_val + " to the calling method");
       return fact_val;
     }
 
