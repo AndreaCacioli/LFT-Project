@@ -78,6 +78,7 @@ public class Parser
         statlistp();
         break;
         case '}':
+		case Tag.EOF:
         break;
 
       }
