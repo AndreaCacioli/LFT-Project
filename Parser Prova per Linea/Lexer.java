@@ -252,7 +252,7 @@ public class Lexer
 
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "../Input.txt";
+        String path = "./Input.txt";
         try
         {
             BufferedReader br = new BufferedReader(new FileReader(path));
@@ -261,7 +261,7 @@ public class Lexer
             do
             {
                tok = lex.lexical_scan(br);
-               System.out.println("Scan: " + tok);
+               System.out.println("Scan: " + tok + " At line: " + lex.line);
             }while (tok.tag != Tag.EOF);
 
 			         //System.out.println("Line: " + line);
