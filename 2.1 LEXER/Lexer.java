@@ -189,6 +189,8 @@ public class Lexer
                         return null;
                       }
                       if(word.lexeme.equals("cond")) return Word.cond;
+                      if(word.lexeme.equals("read")) return Word.read;
+                      if(word.lexeme.equals("print")) return Word.print;
                       if(word.lexeme.equals("when")) return Word.when;
                       if(word.lexeme.equals("then")) return Word.then;
                       if(word.lexeme.equals("else")) return Word.elsetok;
@@ -262,7 +264,7 @@ public class Lexer
                System.out.println("Scan: " + tok);
             }while (tok.tag != Tag.EOF);
 
-			         System.out.println("Line: " + line);
+			         //System.out.println("Line: " + line);
 
             br.close();
         }

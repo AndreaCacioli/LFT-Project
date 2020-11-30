@@ -36,25 +36,25 @@ public class Parser
     {
       switch(look.tag)
       {
-        case 257:
+        case '=':
         case Tag.READ:
         case Tag.WHILE:
         case Tag.PRINT:
         case Tag.CASE:
         case '{':
         statlist();
+        match(Tag.EOF);
         break;
         default:
         error("S");
        }
-    	match(Tag.EOF);
     }
 
     private void statlist()//A
     {
       switch(look.tag)
       {
-        case 257:
+        case '=':
         case Tag.READ:
         case Tag.WHILE:
         case Tag.PRINT:
@@ -73,14 +73,15 @@ public class Parser
       switch(look.tag)
       {
         case ';':
-        match(';');
-        stat();
-        statlistp();
-        break;
+          match(';');
+          stat();
+          statlistp();
+          break;
         case '}':
-		case Tag.EOF:
-        break;
-
+		    case Tag.EOF:
+            break;
+        default:
+          error("B");
       }
 
     }
@@ -89,7 +90,8 @@ public class Parser
     {
       switch(look.tag)
       {
-        case 257:
+        case '=':
+        match('=');
         match(257);
         expr();
         break;
@@ -152,6 +154,10 @@ public class Parser
       else if(look.tag == Tag.ELSE)
       {
         //eps
+      }
+      else
+      {
+        error("E");
       }
     }
     private void whenitem()//F
@@ -233,6 +239,7 @@ public class Parser
         case NumberTok.tag:
         expr();
         exprlistp();
+        break;
         default:
         error("I");
         break;
@@ -253,6 +260,8 @@ public class Parser
         break;
         case ')':
         break;
+        default:
+        error("J");
       }
     }
 

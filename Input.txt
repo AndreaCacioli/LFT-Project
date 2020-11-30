@@ -1,5 +1,12 @@
-<<<<<<< Updated upstream
-{while( < x 0)}
-=======
-1999/17
->>>>>>> Stashed changes
+= x 10;
+print(10);
+print(x);
+
+
+cond when (< x 10) do {print(45)} else {print(x);read(x)};
+
+while(== 56 x)
+{
+	print(12);
+	= x - x 1
+}
