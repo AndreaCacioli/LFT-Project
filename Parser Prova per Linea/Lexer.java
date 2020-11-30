@@ -178,10 +178,9 @@ public class Lexer
                   {
                     word.lexeme += peek;
                     readch(br);
-					          if(peek == '\n') line++;
+					          
                     if((!Character.isLetter(peek) && !Character.isDigit(peek) && peek != '_') || (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r'))
                     {
-
 
                       if(word.lexeme.equals("_"))
                       {
@@ -228,7 +227,7 @@ public class Lexer
 
                      if(!Character.isDigit(peek) || (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r'))
                      {
-                       if(peek == '\n') line++;
+
                        return n;
                      }
                      else
