@@ -38,7 +38,7 @@ public class Translator
     }
 
 
-    public void prog()
+    public void prog()//S
     {
 	     // ... completare ...
         int lnext_prog = code.newLabel();
@@ -55,6 +55,42 @@ public class Translator
         };
 	       // ... completare ...
     }
+
+        private void statlist(int )//A
+        {
+          switch(look.tag)
+          {
+            case '=':
+            case Tag.READ:
+            case Tag.WHILE:
+            case Tag.PRINT:
+            case Tag.CASE:
+            case '{':
+            stat();
+            statlistp();
+            break;
+            default:
+            error("A");
+          }
+        }
+
+        private void statlistp()//B
+        {
+          switch(look.tag)
+          {
+            case ';':
+              match(';');
+              stat();
+              statlistp();
+              break;
+            case '}':
+    		    case Tag.EOF:
+                break;
+            default:
+              error("B");
+          }
+
+        }
 
     public void stat( /* completare */ )
     {
@@ -84,7 +120,7 @@ public class Translator
         }
      }
 
-    private void expr( /* completare */ )
+    private void expr( /* completare */ )//H
     {
         switch(look.tag)
         {
@@ -98,8 +134,6 @@ public class Translator
 	// ... completare ...
         }
     }
-
-
 
     public static void main(String[] args)
     {
