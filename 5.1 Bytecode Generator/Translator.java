@@ -49,9 +49,12 @@ public class Translator
         case Tag.CASE:
         case '{':
         int lnext_prog = code.newLabel();
-        statlist(lnext_prog);
+        statlist(/*lnext_prog*/);
         code.emitLabel(lnext_prog);
         match(Tag.EOF);
+        break;
+        default:
+          error("BIG OOF TIME");
         break;
       }
         try
@@ -61,13 +64,11 @@ public class Translator
         catch(java.io.IOException e)
         {
         	System.out.println("IO error\n");
-        };
-	      default:
-        System.err.println("BIG OOF TIME");
-        break;
+        }
+
     }
 
-        private void statlist(int lnext_prog)//A
+        private void statlist(/*int lnext_prog*/)//A
         {
           switch(look.tag)
           {
@@ -108,9 +109,16 @@ public class Translator
         switch(look.tag)
         {
             case '=':
-            match('=');
-            match(257);
-            expr();
+              match('=');
+              int found = st.lookupAddress(((Word)look).lexeme);
+              if(found == -1)
+              {
+                found = count;
+                st.insert(((Word)look).lexeme,count++);
+              }
+              match(Tag.ID);
+              expr();
+              code.emit(OpCode.istore, found);
             break;
             case Tag.WHILE:
             match(Tag.WHILE);
@@ -119,11 +127,22 @@ public class Translator
             match(')');
             stat();
             break;
-            case Tag.PRINT:
-            match(Tag.PRINT);
-            match('(');
-            exprlist();
-            match(')');
+              case Tag.PRINT:
+              match(Tag.PRINT);
+              match('(');
+              if (look.tag==Tag.ID)
+              {
+                  int id_addr = st.lookupAddress(((Word)look).lexeme);
+                  if (id_addr==-1)
+                  {
+                     error("Error: variable " + Tag.ID + " not defined in this context!");
+                  }
+                  match(Tag.ID);
+                  match(')');
+                  code.emit(OpCode.iload,id_addr);
+                  code.emit(OpCode.invokestatic,1);
+              }
+              //exprlist(); Questa solo se ci  sono dei numeri
             break;
             case Tag.CASE:
             match(Tag.CASE);
@@ -228,17 +247,18 @@ public class Translator
         switch(look.tag)
         {
           case '+':
-          match('+');
-          match('(');
-          exprlist();
-          match(')');
-          break;
+            match('+');
+            match('(');
+            exprlist('s');
+            match(')');
+            break;
+
           case '*':
-          match('*');
-          match('(');
-          exprlist();
-          match(')');
-          break;
+            match('*');
+            match('(');
+            exprlist('p');
+            match(')');
+            break;
 
             case '-':
                 match('-');
@@ -246,23 +266,33 @@ public class Translator
                 expr();
                 code.emit(OpCode.isub);
                 break;
-                case '/':
-                match('/');
-                expr();
-                expr();
+            case '/':
+                  match('/');
+                  expr();
+                  expr();
+                  code.emit(OpCode.idiv);
                 break;
-                case 257:
-                match(257);
+
+            case Tag.ID: //Identificatore
+
+                int id_addr = st.lookupAddress(((Word)look).lexeme);
+                if (id_addr==-1)
+                {
+                    error("Error: variable " + Tag.ID + " not defined in this context!");
+                }
+                code.emit(OpCode.iload, id_addr);
+                match(Tag.ID);
                 break;
-                case 256:
+            case 256:
+                code.emit(OpCode.ldc, ((NumberTok)look).lexeme);
                 match(NumberTok.tag);
                 break;
-                default:
+            default:
                 error("H");
                 break;
         }
     }
-    private void exprlist()//I
+    private void exprlist(char operation)//I
     {
       switch(look.tag)
       {
@@ -270,17 +300,17 @@ public class Translator
         case '-':
         case '*':
         case '/':
-        case 257:
+        case Tag.ID:
         case NumberTok.tag:
-        expr();
-        exprlistp();
-        break;
+          expr();
+          exprlistp(operation);
+          break;
         default:
-        error("I");
-        break;
+          error("I");
+          break;
       }
     }
-    private void exprlistp()//J
+    private void exprlistp(char operation)//J
     {
       switch(look.tag)
       {
@@ -288,15 +318,17 @@ public class Translator
         case '-':
         case '*':
         case '/':
-        case 257:
+        case Tag.ID:
         case NumberTok.tag:
-        expr();
-        exprlistp();
-        break;
+          expr();
+          exprlistp();
+          if (operation == 'p') code.emit(OpCode.imul);
+          if (operation == 's') code.emit(OpCode.iadd);
+          break;
         case ')':
-        break;
+          break;
         default:
-        error("J");
+          error("J");
       }
     }
     public static void main(String[] args)

@@ -11,7 +11,7 @@ public class CodeGenerator {
         instructions.add(new Instruction(opCode));
     }
 
-    public void emit(OpCode opCode , int operand) {
+    public void emit(OpCode opCode , long operand) {
         instructions.add(new Instruction(opCode, operand));
     }
 
@@ -55,15 +55,15 @@ public class CodeGenerator {
         + " return\n"
         + ".end method\n"
         + "\n"
-        + ".method public static read()I\n"        
-        + " .limit stack 3\n"        
-        + " new java/util/Scanner\n"        
-        + " dup\n"        
-        + " getstatic java/lang/System/in Ljava/io/InputStream;\n"        
-        + " invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V\n"        
-        + " invokevirtual java/util/Scanner/next()Ljava/lang/String;\n"        
-        + " invokestatic java/lang/Integer.parseInt(Ljava/lang/String;)I\n"        
-        + " ireturn\n"        
+        + ".method public static read()I\n"
+        + " .limit stack 3\n"
+        + " new java/util/Scanner\n"
+        + " dup\n"
+        + " getstatic java/lang/System/in Ljava/io/InputStream;\n"
+        + " invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V\n"
+        + " invokevirtual java/util/Scanner/next()Ljava/lang/String;\n"
+        + " invokestatic java/lang/Integer.parseInt(Ljava/lang/String;)I\n"
+        + " ireturn\n"
         + ".end method\n"
         + "\n"
         + ".method public static run()V\n"

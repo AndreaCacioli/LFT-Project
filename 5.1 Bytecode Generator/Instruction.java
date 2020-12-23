@@ -1,12 +1,12 @@
 public class Instruction {
     OpCode opCode;
-    int operand;
+    long operand;
 
     public Instruction(OpCode opCode) {
         this.opCode = opCode;
     }
 
-    public Instruction(OpCode opCode, int operand) {
+    public Instruction(OpCode opCode, long operand) {
         this.opCode = opCode;
         this.operand = operand;
     }
