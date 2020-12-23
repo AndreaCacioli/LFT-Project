@@ -1,12 +1,12 @@
-= x 10;
-print(10);
-print(x);
+read(x);
+read(y);
+print(1 +(2 3 4 5));
 
+cond
+	when (> x y) do print(x) else print(y);
 
-cond when (< x 10) do {print(45)} else {print(x);read(x)};
-
-while(== 56 x)
+while (> x 0) 
 {
-	print(12);
-	= x - x 1
+	= x - x 1;
+	print(x)
 }
