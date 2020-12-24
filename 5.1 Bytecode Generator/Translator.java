@@ -2,6 +2,16 @@ import java.io.*;
 
 public class Translator
 {
+
+  /*
+      Characters: o: output -> print
+                  s: sum
+                  p: product
+                ' ': character not needed
+                  m: minus
+                  d: division
+  */
+
     private Lexer lex;
     private BufferedReader pbr;
     private Token look;
@@ -117,7 +127,7 @@ public class Translator
                 st.insert(((Word)look).lexeme,count++);
               }
               match(Tag.ID);
-              expr();
+              expr(' ');
               code.emit(OpCode.istore, found);
             break;
             case Tag.WHILE:
@@ -127,23 +137,12 @@ public class Translator
             match(')');
             stat();
             break;
-              case Tag.PRINT:
+            case Tag.PRINT:
               match(Tag.PRINT);
               match('(');
-              if (look.tag==Tag.ID)
-              {
-                  int id_addr = st.lookupAddress(((Word)look).lexeme);
-                  if (id_addr==-1)
-                  {
-                     error("Error: variable " + Tag.ID + " not defined in this context!");
-                  }
-                  match(Tag.ID);
-                  match(')');
-                  code.emit(OpCode.iload,id_addr);
-                  code.emit(OpCode.invokestatic,1);
-              }
-              //exprlist(); Questa solo se ci  sono dei numeri
-            break;
+              exprlist('o'); //this exprlist should be written
+              match(')');
+              break;
             case Tag.CASE:
             match(Tag.CASE);
             whenlist();
@@ -233,8 +232,8 @@ public class Translator
        if(look.tag == Tag.RELOP)
        {
          match(Tag.RELOP);
-         expr();
-         expr();
+         expr(' ');
+         expr(' ');
        }
        else
        {
@@ -242,7 +241,7 @@ public class Translator
        }
      }
 
-    private void expr( /* completare */ )//H
+    private void expr( char operation)//H
     {
         switch(look.tag)
         {
@@ -251,6 +250,7 @@ public class Translator
             match('(');
             exprlist('s');
             match(')');
+            if(operation == 'o') code.emit(OpCode.invokestatic,1);
             break;
 
           case '*':
@@ -258,19 +258,22 @@ public class Translator
             match('(');
             exprlist('p');
             match(')');
+            if(operation == 'o') code.emit(OpCode.invokestatic,1);
             break;
 
             case '-':
                 match('-');
-                expr();
-                expr();
+                expr('m');
+                expr('m');
                 code.emit(OpCode.isub);
+                if(operation == 'o') code.emit(OpCode.invokestatic,1);
                 break;
             case '/':
                   match('/');
-                  expr();
-                  expr();
+                  expr('d');
+                  expr('d');
                   code.emit(OpCode.idiv);
+                  if(operation == 'o') code.emit(OpCode.invokestatic,1);
                 break;
 
             case Tag.ID: //Identificatore
@@ -278,14 +281,17 @@ public class Translator
                 int id_addr = st.lookupAddress(((Word)look).lexeme);
                 if (id_addr==-1)
                 {
-                    error("Error: variable " + Tag.ID + " not defined in this context!");
+                   error("Error: variable " + Tag.ID + " not defined in this context!");
                 }
+
                 code.emit(OpCode.iload, id_addr);
+                if (operation == 'o') code.emit(OpCode.invokestatic,1);
                 match(Tag.ID);
                 break;
-            case 256:
+            case NumberTok.tag:
                 code.emit(OpCode.ldc, ((NumberTok)look).lexeme);
                 match(NumberTok.tag);
+                if(operation == 'o') code.emit(OpCode.invokestatic,1);
                 break;
             default:
                 error("H");
@@ -302,7 +308,7 @@ public class Translator
         case '/':
         case Tag.ID:
         case NumberTok.tag:
-          expr();
+          expr(operation);
           exprlistp(operation);
           break;
         default:
@@ -320,8 +326,8 @@ public class Translator
         case '/':
         case Tag.ID:
         case NumberTok.tag:
-          expr();
-          exprlistp();
+          expr(operation);
+          exprlistp(operation);
           if (operation == 'p') code.emit(OpCode.imul);
           if (operation == 's') code.emit(OpCode.iadd);
           break;
