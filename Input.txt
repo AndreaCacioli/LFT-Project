@@ -1,4 +1,9 @@
-= x 13;
-print( +(3 x 5) x *(2 x) / x 2 - x 4);
-= y 56;
-print ( - y x)
+= x 0;
+= y 1;
+while(< x 300)
+{
+	= sum +(x y);
+	print(sum);
+	= x y;
+	= y sum
+}

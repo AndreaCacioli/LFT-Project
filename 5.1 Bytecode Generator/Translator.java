@@ -60,9 +60,10 @@ public class Translator
         case '{':
         int lnext_prog = code.newLabel();
         statlist(/*lnext_prog*/);
-        code.emitLabel(lnext_prog);
+        //code.emitLabel(lnext_prog); is this needed???
         match(Tag.EOF);
         break;
+
         default:
           error("BIG OOF TIME");
         break;
@@ -131,12 +132,18 @@ public class Translator
               code.emit(OpCode.istore, found);
             break;
             case Tag.WHILE:
-            match(Tag.WHILE);
-            match('(');
-            bexpr();
-            match(')');
-            stat();
-            break;
+              match(Tag.WHILE);
+              match('(');
+              int startWhileLabel = code.newLabel();
+              code.emitLabel(startWhileLabel);
+              int endWhileLabel = code.newLabel();
+                bexpr(endWhileLabel);
+              match(')');
+                stat();
+                code.emit(OpCode.GOto, startWhileLabel);
+                code.emitLabel(endWhileLabel);
+
+              break;
             case Tag.PRINT:
               match(Tag.PRINT);
               match('(');
@@ -216,7 +223,7 @@ public class Translator
        {
          match(Tag.WHEN);
          match('(');
-         bexpr();
+         bexpr(12345678); //TODO USE LABEL
          match(')');
          match(Tag.DO);
          stat();
@@ -227,13 +234,34 @@ public class Translator
          error("F");
        }
      }
-     private void bexpr()//G
+     private void bexpr(int jumpLabel)//G
      {
        if(look.tag == Tag.RELOP)
        {
+         String operator = ((Word)look).lexeme;
          match(Tag.RELOP);
          expr(' ');
          expr(' ');
+         switch (operator)
+         {
+           case "==":
+              code.emit(OpCode.if_icmpne, jumpLabel);
+              break;
+           case "<=":
+             code.emit(OpCode.if_icmpgt, jumpLabel);
+             break;
+           case "<":
+             code.emit(OpCode.if_icmpge, jumpLabel);
+             break;
+           case ">=":
+             code.emit(OpCode.if_icmplt, jumpLabel);
+             break;
+           case ">":
+             code.emit(OpCode.if_icmple, jumpLabel);
+             break;
+          default:
+            error("Not a valid relational operator!");
+         }
        }
        else
        {
