@@ -115,7 +115,7 @@ public class Translator
 
         }
 
-    public void stat( /* completare */ ) //C
+    public void stat(  ) //C
     {
         switch(look.tag)
         {
@@ -151,11 +151,13 @@ public class Translator
               match(')');
               break;
             case Tag.CASE:
-            match(Tag.CASE);
-            whenlist();
-            match(Tag.ELSE);
-            stat();
-            break;
+            int endOfCond = code.newLabel();
+              match(Tag.CASE);
+              whenlist(endOfCond);
+              match(Tag.ELSE);
+              stat();
+              code.emitLabel(endOfCond);
+              break;
             case '{':
             match('{');
             statlist();
@@ -188,12 +190,12 @@ public class Translator
         }
      }
 
-     private void whenlist()//D
+     private void whenlist(int endOfCond)//D
      {
        if(look.tag == Tag.WHEN)
        {
-         whenitem();
-         whenlistp();
+         whenitem(endOfCond);
+         whenlistp(endOfCond);
        }
        else
        {
@@ -201,12 +203,12 @@ public class Translator
        }
      }
 
-     private void whenlistp()//E
+     private void whenlistp(int endOfCond)//E
      {
        if(look.tag == Tag.WHEN)
        {
-         whenitem();
-         whenlistp();
+         whenitem(endOfCond);
+         whenlistp(endOfCond);
        }
        else if(look.tag == Tag.ELSE)
        {
@@ -217,16 +219,19 @@ public class Translator
          error("E");
        }
      }
-     private void whenitem()//F
+     private void whenitem(int endOfCondLabel)//F
      {
        if(look.tag == Tag.WHEN)
        {
          match(Tag.WHEN);
          match('(');
-         bexpr(12345678); //TODO USE LABEL
+         int jumpTo = code.newLabel();
+         bexpr(jumpTo);
          match(')');
          match(Tag.DO);
          stat();
+         code.emit(OpCode.GOto, endOfCondLabel);
+         code.emitLabel(jumpTo);
 
        }
        else
@@ -261,6 +266,7 @@ public class Translator
              break;
           default:
             error("Not a valid relational operator!");
+            break;
          }
        }
        else
