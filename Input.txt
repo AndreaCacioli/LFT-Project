@@ -1,27 +1,6 @@
-//DOPO I WHILE CI VOGLIONO I ;
-= x 0;
-= y 1;
-while(< x 300)
-{
-	= sum +(x y);
-	print(sum);
-	= x y;
-	= y sum
-};
-= x 0;
-= y 0;
-while(< x 5)
-{
-	= y 0;
-	while(< y 3)
-	{
-		print(y);
-		= y +(y 1)
-	};
-	= x +(1 x)
-};
-= x - 11 10;
-= y 11;
-cond when (> x y) do {= x 69; print(x)}
-	 when (== x y) do {read(x); print(x)}
-	 else print(x) 
+read(a);
+read(b);
+while(<> a b)
+	cond when(> a b) do = a - a b
+	else = b - b a;
+print(a)

@@ -252,6 +252,9 @@ public class Translator
            case "==":
               code.emit(OpCode.if_icmpne, jumpLabel);
               break;
+          case "<>":
+             code.emit(OpCode.if_icmpeq, jumpLabel);
+             break;
            case "<=":
              code.emit(OpCode.if_icmpgt, jumpLabel);
              break;
