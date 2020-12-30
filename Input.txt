@@ -1,6 +1,2 @@
-read(a);
-read(b);
-while(<> a b)
-	cond when(> a b) do = a - a b
-	else = b - b a;
-print(a)
+= x 2;
+print (+(/- 10 9 +(1 0)) / 10 5 *(1 x 3 4) 9 x)

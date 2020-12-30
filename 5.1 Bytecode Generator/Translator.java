@@ -7,9 +7,6 @@ public class Translator
       Characters: o: output -> print
                   s: sum
                   p: product
-                ' ': character not needed
-                  m: minus
-                  d: division
   */
 
     private Lexer lex;
@@ -59,13 +56,12 @@ public class Translator
         case Tag.CASE:
         case '{':
         int lnext_prog = code.newLabel();
-        statlist(/*lnext_prog*/);
-        //code.emitLabel(lnext_prog); is this needed???
+        statlist();
         match(Tag.EOF);
         break;
 
         default:
-          error("BIG OOF TIME");
+          error("A program should start with one of the following:\nread\nprint\nwhile\ncond\nAn open curly brace!");
         break;
       }
         try
@@ -79,7 +75,7 @@ public class Translator
 
     }
 
-        private void statlist(/*int lnext_prog*/)//A
+        private void statlist()//A
         {
           switch(look.tag)
           {
@@ -93,7 +89,7 @@ public class Translator
             statlistp();
             break;
             default:
-            error("A");
+            error("A program should contain one of the following:\nread\nprint\nwhile\ncond\nAn open curly brace!");
           }
         }
 
@@ -110,7 +106,7 @@ public class Translator
     		    case Tag.EOF:
                 break;
             default:
-              error("B");
+              error("Your list of instructions has to be separated by a semicolumn or wrapped by curly braces.");
           }
 
         }
@@ -128,7 +124,7 @@ public class Translator
                 st.insert(((Word)look).lexeme,count++);
               }
               match(Tag.ID);
-              expr(' ');
+              expr();
               code.emit(OpCode.istore, found);
             break;
             case Tag.WHILE:
@@ -147,7 +143,7 @@ public class Translator
             case Tag.PRINT:
               match(Tag.PRINT);
               match('(');
-              exprlist('o'); //this exprlist should be written
+              exprlist('o');
               match(')');
               break;
             case Tag.CASE:
@@ -199,7 +195,7 @@ public class Translator
        }
        else
        {
-         error("D");
+         error("Your conditional statements must start with the keyword 'when' .");
        }
      }
 
@@ -216,7 +212,7 @@ public class Translator
        }
        else
        {
-         error("E");
+         error("You must separate each conditional statement with the keyword 'when' and close the 'cond' with keyword 'else'.");
        }
      }
      private void whenitem(int endOfCondLabel)//F
@@ -236,7 +232,7 @@ public class Translator
        }
        else
        {
-         error("F");
+         error("Your conditional statements must start with the keyword 'when'.");
        }
      }
      private void bexpr(int jumpLabel)//G
@@ -245,8 +241,8 @@ public class Translator
        {
          String operator = ((Word)look).lexeme;
          match(Tag.RELOP);
-         expr(' ');
-         expr(' ');
+         expr();
+         expr();
          switch (operator)
          {
            case "==":
@@ -268,17 +264,17 @@ public class Translator
              code.emit(OpCode.if_icmple, jumpLabel);
              break;
           default:
-            error("Not a valid relational operator!");
+            error("You did not use a valid relational operator in your conditional statement.");
             break;
          }
        }
        else
        {
-         error("G");
+         error("A conditional statement must contain a relational operator.");
        }
      }
 
-    private void expr( char operation)//H
+    private void expr()//H
     {
         switch(look.tag)
         {
@@ -287,7 +283,6 @@ public class Translator
             match('(');
             exprlist('s');
             match(')');
-            if(operation == 'o') code.emit(OpCode.invokestatic,1);
             break;
 
           case '*':
@@ -295,23 +290,20 @@ public class Translator
             match('(');
             exprlist('p');
             match(')');
-            if(operation == 'o') code.emit(OpCode.invokestatic,1);
             break;
 
             case '-':
                 match('-');
-                expr('m');
-                expr('m');
+                expr();
+                expr();
                 code.emit(OpCode.isub);
-                if(operation == 'o') code.emit(OpCode.invokestatic,1);
                 break;
             case '/':
                   match('/');
-                  expr('d');
-                  expr('d');
+                  expr();
+                  expr();
                   code.emit(OpCode.idiv);
-                  if(operation == 'o') code.emit(OpCode.invokestatic,1);
-                break;
+                  break;
 
             case Tag.ID: //Identificatore
 
@@ -322,13 +314,11 @@ public class Translator
                 }
 
                 code.emit(OpCode.iload, id_addr);
-                if (operation == 'o') code.emit(OpCode.invokestatic,1);
                 match(Tag.ID);
                 break;
             case NumberTok.tag:
                 code.emit(OpCode.ldc, ((NumberTok)look).lexeme);
                 match(NumberTok.tag);
-                if(operation == 'o') code.emit(OpCode.invokestatic,1);
                 break;
             default:
                 error("H");
@@ -345,7 +335,8 @@ public class Translator
         case '/':
         case Tag.ID:
         case NumberTok.tag:
-          expr(operation);
+          expr();
+          if (operation == 'o') code.emit(OpCode.invokestatic,1); //Had to put this here, otherwise first element of the list we have to print doesn't get printed
           exprlistp(operation);
           break;
         default:
@@ -363,10 +354,11 @@ public class Translator
         case '/':
         case Tag.ID:
         case NumberTok.tag:
-          expr(operation);
-          exprlistp(operation);
+          expr();
           if (operation == 'p') code.emit(OpCode.imul);
           if (operation == 's') code.emit(OpCode.iadd);
+          if (operation == 'o') code.emit(OpCode.invokestatic,1);
+          exprlistp(operation);
           break;
         case ')':
           break;
