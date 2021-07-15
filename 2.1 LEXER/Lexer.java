@@ -1,5 +1,4 @@
 import java.io.*;
-import java.util.*;
 
 public class Lexer
 {
@@ -72,12 +71,11 @@ public class Lexer
 
                   while(peek != (char)-1)
                   {
-                    do
+                    while(peek != '*' && peek != (char)-1)
                     {
                       readch(br);
-                    }while(peek != '*' && peek != (char)-1);
+                    }
                     // read: /* something *
-
                     readch(br);
                     if(peek == '/') //read: /* something */
                     {
@@ -251,7 +249,7 @@ public class Lexer
 
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = "../Input.txt";
+        String path = "../Input.lft";
         try
         {
             BufferedReader br = new BufferedReader(new FileReader(path));

@@ -4,7 +4,7 @@ public class Word extends Token
     public Word(int tag, String s) { super(tag); lexeme=s; }
     public String toString() { return "<" + tag + ", " + lexeme + ">"; }
     public static final Word
-  	cond = new Word(Tag.CASE, "cond"),
+  	cond = new Word(Tag.COND, "cond"),
   	when = new Word(Tag.WHEN, "when"),
   	then = new Word(Tag.THEN, "then"),
   	elsetok = new Word(Tag.ELSE, "else"),
